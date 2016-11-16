@@ -1,5 +1,7 @@
 package ru.voskhod.crypto;
 
+import org.w3c.dom.Element;
+
 public class Main {
 
     public static final String TEST_M = "<ns2:MessageTypeSelector xmlns:ns2=\"urn://x-artefacts-smev-gov-ru/services/message-exchange/types/basic/1.1\" xmlns=\"urn://x-artefacts-smev-gov-ru/services/message-exchange/types/1.1\" Id=\"SIGNED_BY_CALLER\"><ns2:Timestamp>2014-08-14T08:19:28.972+04:00</ns2:Timestamp></ns2:MessageTypeSelector>";
@@ -12,12 +14,12 @@ public class Main {
         //DigitalSignatureFactory.init("DIGT");
         DigitalSignatureFactory.init("BC_PKCS12");
         DigitalSignatureProcessor dsp = DigitalSignatureFactory.getDigitalSignatureProcessor();
-        // KeyStoreWrapper ksw = DigitalSignatureFactory.getKeyStoreWrapper();
-        // Element e = XMLTransformHelper.buildDocumentFromString(TEST_SIGN).getDocumentElement();
+        KeyStoreWrapper ksw = DigitalSignatureFactory.getKeyStoreWrapper();
+        Element e = XMLTransformHelper.buildDocumentFromString(TEST_SIGN).getDocumentElement();
         /*dsp.signXMLDSigEnveloped(e, ksw.getPrivateKey("REGISTRY\\\\LOSKUTOV2", "123456".toCharArray()), ksw.getX509Certificate("REGISTRY\\\\LOSKUTOV2"));
         System.out.println(XMLTransformHelper.elementToString(e));*/
-        // System.out.println(XMLTransformHelper.elementToString(dsp.signXMLDSigDetached(e, null, ksw.getPrivateKey("REGISTRY\\\\LOSKUTOV2", "123456".toCharArray()), ksw.getX509Certificate("REGISTRY\\\\LOSKUTOV2"))));
+        System.out.println(XMLTransformHelper.elementToString(dsp.signXMLDSigDetached(e, null, ksw.getPrivateKey("REGISTRY\\\\LOSKUTOV2", "123456".toCharArray()), ksw.getX509Certificate("REGISTRY\\\\LOSKUTOV2"))));
         // DigitalSignatureFactory.getDigitalSignatureProcessor().validateXMLDSigEnvelopedSignature(XMLTransformHelper.buildDocumentFromString(TEST_FALSE).getDocumentElement());
-        DigitalSignatureFactory.getDigitalSignatureProcessor().validateXMLDSigDetachedSignature(XMLTransformHelper.buildDocumentFromString(TEST_M_2).getDocumentElement(), XMLTransformHelper.buildDocumentFromString(TEST_S_2).getDocumentElement());
+        //DigitalSignatureFactory.getDigitalSignatureProcessor().validateXMLDSigDetachedSignature(XMLTransformHelper.buildDocumentFromString(TEST_M_2).getDocumentElement(), XMLTransformHelper.buildDocumentFromString(TEST_S_2).getDocumentElement());
     }
 }

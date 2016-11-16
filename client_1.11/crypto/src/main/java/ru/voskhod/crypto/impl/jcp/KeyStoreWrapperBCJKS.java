@@ -18,14 +18,14 @@ public class KeyStoreWrapperBCJKS implements KeyStoreWrapper {
     private final KeyStore ks;
 
     public KeyStoreWrapperBCJKS() throws Exception {
-        ks = KeyStore.getInstance("HDImageStore");
+        ks = KeyStore.getInstance("JKS");
         ks.load(null);
     }
 
     public PrivateKey getPrivateKey(String alias, char[] password, String keyPath) throws KeyStoreException,
             NoSuchAlgorithmException, UnrecoverableKeyException, IOException, CertificateException {
-        KeyStore ks = KeyStore.getInstance("JKS");
-        ks.load(new FileInputStream(keyPath), password);
+        //KeyStore ks = KeyStore.getInstance("JKS");
+        this.ks.load(new FileInputStream(keyPath), password);
         Key key = ks.getKey(alias, password);
         return (PrivateKey) key;
 
