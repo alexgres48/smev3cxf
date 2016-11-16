@@ -15,10 +15,11 @@ public class Main {
         DigitalSignatureFactory.init("BC_PKCS12");
         DigitalSignatureProcessor dsp = DigitalSignatureFactory.getDigitalSignatureProcessor();
         KeyStoreWrapper ksw = DigitalSignatureFactory.getKeyStoreWrapper();
-        Element e = XMLTransformHelper.buildDocumentFromString(TEST_SIGN).getDocumentElement();
+        String path = "/keystore/keypair.p12";
+        Element e = XMLTransformHelper.buildDocumentFromString(TEST_S).getDocumentElement();
         /*dsp.signXMLDSigEnveloped(e, ksw.getPrivateKey("REGISTRY\\\\LOSKUTOV2", "123456".toCharArray()), ksw.getX509Certificate("REGISTRY\\\\LOSKUTOV2"));
         System.out.println(XMLTransformHelper.elementToString(e));*/
-        System.out.println(XMLTransformHelper.elementToString(dsp.signXMLDSigDetached(e, null, ksw.getPrivateKey("REGISTRY\\\\LOSKUTOV2", "123456".toCharArray()), ksw.getX509Certificate("REGISTRY\\\\LOSKUTOV2"))));
+        System.out.println(XMLTransformHelper.elementToString(dsp.signXMLDSigDetached(e, null, ksw.getPrivateKey("1", "111111".toCharArray(), path), ksw.getX509Certificate("1"))));
         // DigitalSignatureFactory.getDigitalSignatureProcessor().validateXMLDSigEnvelopedSignature(XMLTransformHelper.buildDocumentFromString(TEST_FALSE).getDocumentElement());
         //DigitalSignatureFactory.getDigitalSignatureProcessor().validateXMLDSigDetachedSignature(XMLTransformHelper.buildDocumentFromString(TEST_M_2).getDocumentElement(), XMLTransformHelper.buildDocumentFromString(TEST_S_2).getDocumentElement());
     }
