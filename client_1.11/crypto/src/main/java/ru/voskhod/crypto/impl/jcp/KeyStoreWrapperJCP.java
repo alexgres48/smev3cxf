@@ -3,6 +3,7 @@ package ru.voskhod.crypto.impl.jcp;
 import ru.voskhod.crypto.KeyStoreWrapper;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -20,7 +21,8 @@ public class KeyStoreWrapperJCP implements KeyStoreWrapper {
         ks.load(null);
     }
 
-    public PrivateKey getPrivateKey(String alias, char[] password) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public PrivateKey getPrivateKey(String alias, char[] password, String path) throws KeyStoreException,
+            NoSuchAlgorithmException, UnrecoverableKeyException, IOException, CertificateException {
         return (PrivateKey) ks.getKey(alias, password);
     }
 

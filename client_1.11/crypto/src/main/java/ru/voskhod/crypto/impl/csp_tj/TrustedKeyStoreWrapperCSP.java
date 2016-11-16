@@ -26,7 +26,7 @@ public class TrustedKeyStoreWrapperCSP implements KeyStoreWrapper {
         ks.load(stream, null);
     }
 
-    public PrivateKey getPrivateKey(String alias, char[] password) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public PrivateKey getPrivateKey(String alias, char[] password, String path) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
         alias = resolveAlias(alias);
         return (PrivateKey) ks.getKey(alias, password);
     }

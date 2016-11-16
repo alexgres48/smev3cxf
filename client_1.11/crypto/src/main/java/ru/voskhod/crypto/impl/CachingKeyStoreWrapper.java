@@ -7,6 +7,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import ru.voskhod.crypto.KeyStoreWrapper;
 
+import java.io.IOException;
 import java.nio.CharBuffer;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -77,14 +78,15 @@ public final class CachingKeyStoreWrapper implements KeyStoreWrapper {
     }
 
     @Override
-    public PrivateKey getPrivateKey(final String alias, final char[] password) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+    public PrivateKey getPrivateKey(final String alias, final char[] password, final String path) throws KeyStoreException,
+            NoSuchAlgorithmException, UnrecoverableKeyException, IOException, CertificateException {
         if (keyCache == null) {
-            return original.getPrivateKey(alias, password);
+            return original.getPrivateKey(alias, password, path);
         } else {
             try {
                 PKEntry entry = keyCache.get(alias, new Callable<PKEntry>() {
                     public PKEntry call() throws Exception {
-                        PrivateKey pk = original.getPrivateKey(alias, password);
+                        PrivateKey pk = original.getPrivateKey(alias, password, path);
                         return new PKEntry(pk, hash(password));
                     }
                 });

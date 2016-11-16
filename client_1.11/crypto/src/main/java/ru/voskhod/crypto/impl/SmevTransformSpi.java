@@ -66,9 +66,9 @@ public class SmevTransformSpi extends TransformSpi {
 		return ALGORITHM_URN;
 	}
 
-	@Override
-	protected XMLSignatureInput enginePerformTransform(XMLSignatureInput argInput,
-			OutputStream argOutput, Transform argTransform) throws IOException,
+    //@Override
+    protected XMLSignatureInput enginePerformTransform(XMLSignatureInput argInput,
+                                                       OutputStream argOutput, Transform argTransform) throws IOException,
 			CanonicalizationException, InvalidCanonicalizerException,
 			TransformationException, ParserConfigurationException, SAXException {
 	
@@ -82,9 +82,9 @@ public class SmevTransformSpi extends TransformSpi {
             }		
 	}
 
-	@Override
-	protected XMLSignatureInput enginePerformTransform(XMLSignatureInput argInput,
-			Transform argTransform) throws IOException, CanonicalizationException,
+    //@Override
+    protected XMLSignatureInput enginePerformTransform(XMLSignatureInput argInput,
+                                                       Transform argTransform) throws IOException, CanonicalizationException,
 			InvalidCanonicalizerException, TransformationException,
 			ParserConfigurationException, SAXException {
 		

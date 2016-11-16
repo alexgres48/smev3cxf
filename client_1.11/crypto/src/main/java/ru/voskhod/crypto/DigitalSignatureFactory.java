@@ -3,6 +3,7 @@ package ru.voskhod.crypto;
 import org.apache.xml.security.algorithms.JCEMapper;
 import org.apache.xml.security.algorithms.SignatureAlgorithm;
 import org.apache.xml.security.transforms.Transform;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import ru.voskhod.crypto.exceptions.SigLibInitializationException;
@@ -11,9 +12,12 @@ import ru.voskhod.crypto.impl.CachingKeyStoreWrapper;
 import ru.voskhod.crypto.impl.DigitalSignatureProcessorImpl;
 import ru.voskhod.crypto.impl.SmevTransformSpi;
 import ru.voskhod.crypto.impl.csp_tj.TrustedKeyStoreWrapperCSP;
+import ru.voskhod.crypto.impl.jcp.KeyStoreWrapperBCJKS;
+import ru.voskhod.crypto.impl.jcp.KeyStoreWrapperBCPKCS11;
 import ru.voskhod.crypto.impl.jcp.KeyStoreWrapperJCP;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.security.Security;
 
 public class DigitalSignatureFactory {
 
@@ -23,6 +27,8 @@ public class DigitalSignatureFactory {
 
     public static final String CSP_TJ_PROVIDER_NAME = "DIGT";
     public static final String JCP_PROVIDER_NAME = "JCP";
+    public static final String BOUNCY_PKCS12 = "BC_PKCS12";
+    public static final String BOUNCY_JKS = "BC_JKS";
 
     public static synchronized void init(String providerName) throws SigLibInitializationException {
         if (processor == null) {
@@ -36,6 +42,12 @@ public class DigitalSignatureFactory {
                 } else if (JCP_PROVIDER_NAME.equals(providerName)) {
                     initXmlSec("ru.CryptoPro.JCPxml.xmldsig.SignatureGostR34102001$SignatureGostR34102001GostR3411");
                     keyStoreWrapper = new KeyStoreWrapperJCP();
+                } else if (BOUNCY_PKCS12.equals(providerName)) {
+                    initXmlSec("org.bouncycastle.jce.provider.BouncyCastleProvider");
+                    keyStoreWrapper = new KeyStoreWrapperBCPKCS11();
+                } else if (BOUNCY_JKS.equals(providerName)) {
+                    initXmlSec("org.bouncycastle.jce.provider.BouncyCastleProvider");
+                    keyStoreWrapper = new KeyStoreWrapperBCJKS();
                 } else {
                     throw new SigLibInitializationException("Процессор для запрошенного провайдера не найден!");
                 }
@@ -64,12 +76,18 @@ public class DigitalSignatureFactory {
 
             // При формировании элемента Signature будут убраны все разрывы между элементами.
             System.setProperty("org.apache.xml.security.ignoreLineBreaks", "true");
-
+            Security.addProvider(new BouncyCastleProvider());
+            String algMeth = "GOST3411withGOST3410EL";
             // Регистрируем реализации алгоритмов в xmlsec.
             try {
                 Class.forName(algorithmClassName);
                 SignatureAlgorithm.providerInit();
-                SignatureAlgorithm.register(DigitalSignatureProcessorImpl.XMLDSIG_SIGN_METHOD, algorithmClassName);
+                if (algorithmClassName.equals("org.bouncycastle.jce.provider.BouncyCastleProvider")) {
+                    algMeth = "GOST3411WITHECGOST3410";
+                    SignatureAlgorithm.register(algMeth, algorithmClassName);
+                } else if (!algorithmClassName.equals("BC")) {
+                    SignatureAlgorithm.register(DigitalSignatureProcessorImpl.XMLDSIG_SIGN_METHOD, algorithmClassName);
+                }
             } catch (Exception e) {
                 throw new SigLibInitializationException("Не удалось зарегистрировать алгоритм: " + DigitalSignatureProcessorImpl.XMLDSIG_SIGN_METHOD + "/" + algorithmClassName + ". Убедитесь что выбраный провайдер действительно установлен!", e);
             }
@@ -93,7 +111,7 @@ public class DigitalSignatureFactory {
             el2.setAttribute("Description", "GOST R 34102001 Digital Signature Algorithm with GOST R 3411 Digest");
             el2.setAttribute("AlgorithmClass", "Signature");
             el2.setAttribute("RequirementLevel", "OPTIONAL");
-            el2.setAttribute("JCEName", "GOST3411withGOST3410EL");
+            el2.setAttribute("JCEName", algMeth);
             algs.appendChild(el2);
             // SAML отправка.
             Element el3 = doc.createElementNS(NameSpace, "Algorithm");
